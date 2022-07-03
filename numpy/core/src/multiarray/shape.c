@@ -22,6 +22,7 @@
 #include "templ_common.h" /* for npy_mul_with_overflow_intp */
 #include "common.h" /* for convert_shape_to_string */
 #include "alloc.h"
+#include "conversion_utils.h"
 
 static int
 _fix_unknown_dimension(PyArray_Dims *newshape, PyArrayObject *arr);
@@ -199,7 +200,7 @@ PyArray_Resize(PyArrayObject *self, PyArray_Dims *newshape, int refcheck,
  */
 NPY_NO_EXPORT PyObject *
 PyArray_Newshape(PyArrayObject *self, PyArray_Dims *newdims,
-                 NPY_ORDER order)
+                 NPY_ORDER order, _PyArray_CopyMode copy)
 {
     npy_intp i;
     npy_intp *dimensions = newdims->ptr;
@@ -247,7 +248,8 @@ PyArray_Newshape(PyArrayObject *self, PyArray_Dims *newdims,
      */
     Py_INCREF(self);
     if (((order == NPY_CORDER && !PyArray_IS_C_CONTIGUOUS(self)) ||
-         (order == NPY_FORTRANORDER && !PyArray_IS_F_CONTIGUOUS(self)))) {
+         (order == NPY_FORTRANORDER && !PyArray_IS_F_CONTIGUOUS(self))) &&
+         copy != NPY_COPY_ALWAYS) {
         int success = 0;
         success = _attempt_nocopy_reshape(self, ndim, dimensions,
                                           newstrides, order);
@@ -306,7 +308,7 @@ PyArray_Reshape(PyArrayObject *self, PyObject *shape)
     if (!PyArray_IntpConverter(shape, &newdims)) {
         return NULL;
     }
-    ret = PyArray_Newshape(self, &newdims, NPY_CORDER);
+    ret = PyArray_Newshape(self, &newdims, NPY_CORDER, NPY_COPY_IF_NEEDED);
     npy_free_cache_dim_obj(newdims);
     return ret;
 }
@@ -908,10 +910,10 @@ PyArray_Ravel(PyArrayObject *arr, NPY_ORDER order)
     }
 
     if (order == NPY_CORDER && PyArray_IS_C_CONTIGUOUS(arr)) {
-        return PyArray_Newshape(arr, &newdim, NPY_CORDER);
+        return PyArray_Newshape(arr, &newdim, NPY_CORDER, NPY_COPY_IF_NEEDED);
     }
     else if (order == NPY_FORTRANORDER && PyArray_IS_F_CONTIGUOUS(arr)) {
-        return PyArray_Newshape(arr, &newdim, NPY_FORTRANORDER);
+        return PyArray_Newshape(arr, &newdim, NPY_FORTRANORDER, NPY_COPY_IF_NEEDED);
     }
     /* For KEEPORDER, check if we can make a flattened view */
     else if (order == NPY_KEEPORDER) {

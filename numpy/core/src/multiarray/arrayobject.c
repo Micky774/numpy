@@ -776,7 +776,7 @@ _void_compare(PyArrayObject *self, PyArrayObject *other, int cmp_op)
                         PyArray_NDIM((PyArrayObject *)temp) - result_ndim);
 
                     temp2 = PyArray_Newshape((PyArrayObject *)temp,
-                                             &newdims, NPY_ANYORDER);
+                                             &newdims, NPY_ANYORDER, NPY_COPY_IF_NEEDED);
                     if (temp2 == NULL) {
                         Py_DECREF(temp);
                         Py_XDECREF(res);

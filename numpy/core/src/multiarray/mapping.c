@@ -16,6 +16,7 @@
 #include "npy_pycompat.h"
 #include "npy_import.h"
 
+#include "conversion_utils.h"
 #include "common.h"
 #include "ctors.h"
 #include "descriptor.h"
@@ -145,7 +146,7 @@ PyArray_MapIterSwapAxes(PyArrayMapIterObject *mit, PyArrayObject **ret, int getm
         for (int i = 0; i < mit->nd-PyArray_NDIM(arr); i++) {
             permute.ptr[i] = 1;
         }
-        new = PyArray_Newshape(arr, &permute, NPY_ANYORDER);
+        new = PyArray_Newshape(arr, &permute, NPY_ANYORDER, NPY_COPY_IF_NEEDED);
         Py_DECREF(arr);
         *ret = (PyArrayObject *)new;
         if (new == NULL) {
@@ -2831,7 +2832,7 @@ PyArray_MapIterNew(npy_index_info *indices , int index_num, int index_type,
             permute.ptr = &PyArray_DIMS(extra_op)[
                                             PyArray_NDIM(extra_op) - mit->nd];
             tmp_arr = (PyArrayObject*)PyArray_Newshape(extra_op, &permute,
-                                                       NPY_CORDER);
+                                                       NPY_CORDER, NPY_COPY_IF_NEEDED);
             if (tmp_arr == NULL) {
                 goto broadcast_error;
             }

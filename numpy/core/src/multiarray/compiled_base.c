@@ -15,6 +15,7 @@
 #include "ctors.h"
 #include "common.h"
 #include "simd/simd.h"
+#include "conversion_utils.h"
 
 #include <string.h>
 
@@ -1761,7 +1762,7 @@ unpack_bits(PyObject *input, int axis, PyObject *count_obj, char order)
         npy_intp shape = 1;
 
         newdim.ptr = &shape;
-        temp = (PyArrayObject *)PyArray_Newshape(new, &newdim, NPY_CORDER);
+        temp = (PyArrayObject *)PyArray_Newshape(new, &newdim, NPY_CORDER, NPY_COPY_IF_NEEDED);
         Py_DECREF(new);
         if (temp == NULL) {
             return NULL;

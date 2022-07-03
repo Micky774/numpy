@@ -2524,7 +2524,7 @@ array_vdot(PyObject *NPY_UNUSED(dummy), PyObject *args)
         goto fail;
     }
 
-    op1 = PyArray_Newshape(ap1, &newdims, NPY_CORDER);
+    op1 = PyArray_Newshape(ap1, &newdims, NPY_CORDER, NPY_COPY_IF_NEEDED);
     if (op1 == NULL) {
         Py_DECREF(type);
         goto fail;
@@ -2536,7 +2536,7 @@ array_vdot(PyObject *NPY_UNUSED(dummy), PyObject *args)
     if (ap2 == NULL) {
         goto fail;
     }
-    op2 = PyArray_Newshape(ap2, &newdims, NPY_CORDER);
+    op2 = PyArray_Newshape(ap2, &newdims, NPY_CORDER, NPY_COPY_IF_NEEDED);
     if (op2 == NULL) {
         goto fail;
     }

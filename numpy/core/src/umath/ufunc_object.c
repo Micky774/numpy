@@ -58,6 +58,7 @@
 #include "convert_datatype.h"
 #include "legacy_array_method.h"
 #include "abstractdtypes.h"
+#include "conversion_utils.h"
 
 /* TODO: Only for `NpyIter_GetTransferFlags` until it is public */
 #define NPY_ITERATOR_IMPLEMENTATION_CODE
@@ -5811,7 +5812,7 @@ prepare_input_arguments_for_outer(PyObject *args, PyUFuncObject *ufunc)
     }
 
     PyArrayObject *ap_new;
-    ap_new = (PyArrayObject *)PyArray_Newshape(ap1, &newdims, NPY_CORDER);
+    ap_new = (PyArrayObject *)PyArray_Newshape(ap1, &newdims, NPY_CORDER, NPY_COPY_IF_NEEDED);
     if (ap_new == NULL) {
         goto fail;
     }
