@@ -8,6 +8,8 @@ import numpy_api
 
 # use annotated api when running under cpychecker
 h_template = r"""
+#include "conversion_utils.h"
+
 #if defined(_MULTIARRAYMODULE) || defined(WITH_CPYCHECKER_STEALS_REFERENCE_TO_ARG_ATTRIBUTE)
 
 typedef struct {
